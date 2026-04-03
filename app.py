@@ -178,7 +178,7 @@ with col4:
 
 # Cartão de emergência (expansível)
 with st.expander("🆘 Cartão de Emergência (clique para ver)"):
-    st.markdown(gabi.get_emergency_card())
+# st.markdown(gabi.get_emergency_card())
     st.markdown("**Salve este número no seu celular:** 📞 **188** (CVV)")
 
 # Recursos adicionais

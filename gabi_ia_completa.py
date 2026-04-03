@@ -811,7 +811,7 @@ if __name__ == "__main__":
     ]
 
     for name, msg in test_cases:
-        print(f"👤 {name}: "{msg}"")
+        print(f'👤 {name}: "{msg}"')
         print("-" * 50)
 
         response = gabi.get_response(msg, name, f"user_{name.lower()}")

@@ -12,13 +12,20 @@ class GabiIA:
         self.user_name = None
         self.user_id = None
         self.conversation_history = []
+        self.diary_entries = []
 
         if not os.path.exists(data_dir):
             os.makedirs(data_dir)
 
         self.crisis_keywords = [
-            'quero morrer', 'vou me matar', 'suicidio',
-            'nao aguento mais', 'desistir de tudo'
+            'quero morrer', 'vou me matar', 'suicidio', 'suicida',
+            'nao aguento mais', 'desistir de tudo', 'quero desaparecer'
+        ]
+
+        self.gabi_quotes = [
+            "Você já sobreviveu a 100% dos seus dias difíceis até aqui.",
+            "Um dia de cada vez.",
+            "Você não é sua pior escolha. Você é sua decisão de mudar."
         ]
 
     def check_crisis(self, message: str) -> Tuple[bool, List[str]]:
@@ -28,35 +35,70 @@ class GabiIA:
 
     def get_crisis_response(self) -> str:
         return """
-⚠️ PROCURE AJUDA IMEDIATA ⚠️
+⚠️ **ESTOU PREOCUPADA COM VOCÊ**
 
-📞 188 - CVV (24h)
+📞 188 - CVV (24h, gratuito)
 📞 192 - SAMU
 
+Respire. Isso vai passar.
 Você não está sozinho.
 """
 
-    def get_response(self, message: str, user_name=None, user_id=None) -> Dict:
-
-        is_crisis, _ = self.check_crisis(message)
-
-        if is_crisis:
-            return {
-                "response": self.get_crisis_response(),
-                "alert_level": "HIGH"
-            }
-
-        return {
-            "response": f"💬 Você disse: {message}",
-            "alert_level": "NORMAL"
-        }
-
     def get_emergency_card(self) -> str:
         return """
-🆘 EMERGÊNCIA
+🆘 **EMERGÊNCIA**
 
 📞 188 - CVV  
 📞 192 - SAMU  
 
 Respire. Isso vai passar.
 """
+
+    def _get_random_quote(self) -> str:
+        return random.choice(self.gabi_quotes)
+
+    def get_response(self, message: str, user_name=None, user_id=None) -> Dict:
+
+        if user_name:
+            self.user_name = user_name
+
+        is_crisis, _ = self.check_crisis(message)
+
+        if is_crisis:
+            return {
+                "type": "crisis",
+                "response": self.get_crisis_response(),
+                "alert_level": "HIGH"
+            }
+
+        return {
+            "type": "normal",
+            "response": f"""
+💚 Estou aqui com você.
+
+Você disse: "{message}"
+
+✨ {self._get_random_quote()}
+""",
+            "alert_level": "NORMAL"
+        }
+
+
+# =========================
+# TESTE LOCAL (NÃO AFETA STREAMLIT)
+# =========================
+
+if __name__ == "__main__":
+    gabi = GabiIA()
+
+    test_cases = [
+        ("João", "Oi"),
+        ("Maria", "Estou com vontade de usar"),
+        ("Pedro", "Quero desistir de tudo")
+    ]
+
+    for name, msg in test_cases:
+        print(f'👤 {name}: "{msg}"')
+        response = gabi.get_response(msg, name)
+        print(response["response"])
+        print("-" * 50)
